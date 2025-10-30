@@ -29,9 +29,11 @@ def main(datapath, degrees):
         
     # iterate through each n in the list degrees, calling the feature_matrix and least_squares functions to solve
     # for the model parameters in each case. Append the result to paramFits each time.
-    '''
-    fill in your code here
-    '''
+
+    for d in degrees:
+        X = feature_matrix(x, d)
+        B = least_squares(X, y)
+        paramFits.append(B)
 
     return paramFits
 
@@ -55,10 +57,10 @@ def feature_matrix(x, d):
     # There are several ways to write this function. The most efficient would be a nested list comprehension
     # which for each sample in x calculates x^d, x^(d-1), ..., x^0.
     # Please be aware of which matrix colum corresponds to which degree polynomial when completing the writeup.
-    '''
-    fill in your code here
-    '''
-
+    X = []
+    for sample in x:
+        row = [sample ** power for power in range(d, -1, -1)]
+        X.append(row)
     return X
 
 
@@ -77,9 +79,12 @@ def least_squares(X, y):
     y = np.array(y)
 
     # Use the matrix algebra functions in numpy to solve the least squares equations. This can be done in just one line.
-    '''
-    fill in your code here
-    '''
+
+    XT = X.T
+    XTX = XT @ X
+    XTX_inv = np.linalg.inv(XTX)
+    XTy = XT @ y
+    B = XTX_inv @ XTy
 
     return B
 
