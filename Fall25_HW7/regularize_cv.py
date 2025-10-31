@@ -25,12 +25,8 @@ def normalize_train(X_train):
 
     trn_mean = np.mean(X_train, axis=0)
     trn_std = np.std(X_train, axis=0)
-
-    # Avoid division by zero
     trn_std[trn_std == 0] = 1
-
     x = (X_train - trn_mean) / trn_std
-
     return x, trn_mean, trn_std
 
 # Part 2
@@ -50,15 +46,10 @@ def normalize_test(X_test, trn_mean, trn_std):
 
     if X_test.size == 0:
         return np.array([])
-
-        # Avoid division by zero
     trn_std_adj = trn_std.copy()
     trn_std_adj[trn_std_adj == 0] = 1
-
     x = (X_test - trn_mean) / trn_std_adj
-
     return x
-
 
 # Part 3
 # Function to return a numpy array generated with `np.logspace` with a length
@@ -74,10 +65,7 @@ def get_lambda_range():
     # lmbda : numpy array of logarithmically spaced values
 
     lmbda = np.logspace(-1, 3, 51)
-
     return lmbda
-
-
 
 # Part 4
 # Function that trains a ridge regression model on the input dataset with lambda=1
@@ -94,7 +82,6 @@ def train_model(X_train, y_train, l):
 
     model = Ridge(alpha=l, fit_intercept=True)
     model.fit(X_train, y_train)
-
     return model
 
 # Part 5
@@ -113,9 +100,7 @@ def error(x, y, model):
 
     y_pred = model.predict(x)
     mse = mean_squared_error(y, y_pred)
-
     return mse
-
 
 def main():
     # Importing dataset
@@ -138,32 +123,26 @@ def main():
         X, y, test_size=0.2, shuffle=False
     )
 
-
     # Part 1:
     # Complete the function 'normalize_train' above
-    
     # Part 2:
     # Complete the function 'normalize_test' above
-
-
     # Normalizing training and testing data
+
     [X_train, trn_mean, trn_std] = normalize_train(X_train)
     X_test = normalize_test(X_test, trn_mean, trn_std)
 
-
     # Part 3: 
     # Complete the function 'get_lambda_range'.
-    
     # Part 4:
     # Complete the function 'train_model' above.
-    
     # Part 5:
     # Complete the function 'error' above.
 
     # Define the range of lambda to test
     lmbda = get_lambda_range()
     # uncomment the below line to help verify your answer is correct.
-    # lmbda = [1, 500, 1000, 2500]
+    #lmbda = [1, 500, 1000, 2500]
     # make sure to re-comment above line so that the lambda checked during grading is from 'get_lambda_range'
     MODEL = []
     MSE = []
@@ -188,13 +167,11 @@ def main():
     plt.ylabel('Mean Squared Error')
     plt.title('MSE vs Lambda for Ridge Regression')
     plt.grid(True)
-    plt.show()
+    plt.show(block=False)
+    plt.pause(5)
 
     # Find best value of lmbda in terms of MSE
     # Record this value on the writeup
-    ''' 
-    fill in your code below 
-    '''
     ind = np.argmin(MSE)
     [lmda_best, MSE_best, model_best] = [lmbda[ind], MSE[ind], MODEL[ind]]
 
@@ -239,10 +216,10 @@ def main():
     plt.ylabel('Stock Price')
     plt.title('Actual vs Predicted Google Stock Prices')
     plt.legend()
-    plt.show()
+    plt.show(block=False)
+    plt.pause(5)
 
     return model_best
-
 
 if __name__ == "__main__":
     model_best = main()
