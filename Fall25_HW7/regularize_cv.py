@@ -3,6 +3,7 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
 
 # Part 1
 # Function that normalizes features in training set to zero mean and unit variance.
@@ -18,14 +19,19 @@ def normalize_train(X_train):
     # X : The normalized version of the feature matrix, a numpy array
     # trn_mean : The mean of each column in the training set, float
     # trn_std : The std dev of each column in the training set, float
-    
-    '''
-    Fill in your code here
-    '''
-    
-    
 
-    return X, trn_mean, trn_std
+    if X_train.size == 0:
+        return np.array([]), np.array([]), np.array([])
+
+    trn_mean = np.mean(X_train, axis=0)
+    trn_std = np.std(X_train, axis=0)
+
+    # Avoid division by zero
+    trn_std[trn_std == 0] = 1
+
+    x = (X_train - trn_mean) / trn_std
+
+    return x, trn_mean, trn_std
 
 # Part 2
 # Function that normalizes testing set according to mean and std of training set
@@ -42,14 +48,16 @@ def normalize_test(X_test, trn_mean, trn_std):
     # --------------------
     # X : The normalized version of the feature matrix, X_test
 
-    '''
-    Fill in your code here
-    '''
-    
-    
-    
+    if X_test.size == 0:
+        return np.array([])
 
-    return X
+        # Avoid division by zero
+    trn_std_adj = trn_std.copy()
+    trn_std_adj[trn_std_adj == 0] = 1
+
+    x = (X_test - trn_mean) / trn_std_adj
+
+    return x
 
 
 # Part 3
@@ -64,13 +72,8 @@ def get_lambda_range():
     # Output
     # --------------------
     # lmbda : numpy array of logarithmically spaced values
-    
-    '''
-    Fill in your code here
-    '''
 
-
-
+    lmbda = np.logspace(-1, 3, 51)
 
     return lmbda
 
@@ -89,15 +92,14 @@ def train_model(X_train, y_train, l):
     # --------------------
     # model : A numpy object containing the trained model
 
-    '''
-    Fill in your code here
-    '''
+    model = Ridge(alpha=l, fit_intercept=True)
+    model.fit(X_train, y_train)
 
     return model
 
 # Part 5
 # Function that calculates the mean squared error of the model on the input dataset
-def error(X, y, model):
+def error(x, y, model):
     
     # Input
     # ------------------
@@ -109,9 +111,8 @@ def error(X, y, model):
     # ------------------
     # mse : Mean squared error
 
-    '''
-    Fill in your code here
-    '''
+    y_pred = model.predict(x)
+    mse = mean_squared_error(y, y_pred)
 
     return mse
 
@@ -180,10 +181,13 @@ def main():
     # Part 6
     # Plot the MSE as a function of lmbda
     # Note that the code to find MSE has already been completed in part 5.
-    ''' 
-    fill in your code below 
-    '''
-    plt  # <<< fill in here 
+
+    plt.figure(figsize=(10, 6))
+    plt.semilogx(lmbda, MSE)
+    plt.xlabel('Lambda (Regularization Parameter)')
+    plt.ylabel('Mean Squared Error')
+    plt.title('MSE vs Lambda for Ridge Regression')
+    plt.grid(True)
     plt.show()
 
     # Find best value of lmbda in terms of MSE
@@ -191,7 +195,7 @@ def main():
     ''' 
     fill in your code below 
     '''
-    ind = None  # <<< fill in here
+    ind = np.argmin(MSE)
     [lmda_best, MSE_best, model_best] = [lmbda[ind], MSE[ind], MODEL[ind]]
 
     print(
@@ -204,30 +208,39 @@ def main():
     # Part 7
     # Using the best model found above, write out the model coefficients and intercept
     # Record this value on the writeup
-    ''' 
-    fill in your code below 
-    '''
+
+    coefficients = model_best.coef_
+    intercept = model_best.intercept_
+    print("Model coefficients:", coefficients)
+    print("Model intercept:", intercept)
     
     # Part 8
     # Load GOOG.csv 
     # This process will be similar to steps 1-7 where AAPL.csv is loaded
     # Note that you should NOT call 'train_test_split' in this part.
-    ''' 
-    fill in your code below 
-    '''
-    X_goog = None  # <<< fill in here (similar to step 6)
-    y = None  # <<< fill in here (similar to step 7)
+
+    df_goog = pd.read_csv("GOOG.csv")
+    remove_features = ["Date"]
+    df_goog["Prediction"] = pd.Series(np.append(df_goog["Close"][1:].to_numpy(), [0]))
+    df_goog.drop(df_goog.tail(1).index, inplace=True)
+    df_goog.drop(remove_features, axis=1, inplace=True)
+    X_goog = np.array(df_goog.drop(["Prediction"], axis=1))
+    y_goog = np.array(df_goog["Prediction"])
 
     # normalize X similar to X_test
-
-    y_hat = None  # <<< fill in here (use your best model from Part 7)
+    X_goog_norm = normalize_test(X_goog, trn_mean, trn_std)
+    y_hat =  model_best.predict(X_goog_norm)
 
     # plot y and y_hat
-    plt.figure()
-    '''
-    fill in your code here
-    '''
+    plt.figure(figsize=(12, 6))
+    plt.plot(y_goog, label='Actual Google Stock Price', color='blue')
+    plt.plot(y_hat, label='Predicted Google Stock Price', color='red', linestyle='--')
+    plt.xlabel('Time')
+    plt.ylabel('Stock Price')
+    plt.title('Actual vs Predicted Google Stock Prices')
+    plt.legend()
     plt.show()
+
     return model_best
 
 
