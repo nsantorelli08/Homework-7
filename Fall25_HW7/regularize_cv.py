@@ -33,7 +33,6 @@ def normalize_train(X_train):
 # Function that normalizes testing set according to mean and std of training set
 
 def normalize_test(X_test, trn_mean, trn_std):
-    
     # Input
     # --------------------
     # X_test : Testing data, a numpy array with shape (n_samples, n_features)
@@ -55,7 +54,6 @@ def normalize_test(X_test, trn_mean, trn_std):
 # Function to return a numpy array generated with `np.logspace` with a length
 # of 51 starting from 1E^-1 and ending at 1E^3
 def get_lambda_range():
-    
     # Input
     # --------------------
     # Nothing
@@ -140,10 +138,13 @@ def main():
     # Complete the function 'error' above.
 
     # Define the range of lambda to test
+    
     lmbda = get_lambda_range()
+    
     # uncomment the below line to help verify your answer is correct.
     #lmbda = [1, 500, 1000, 2500]
     # make sure to re-comment above line so that the lambda checked during grading is from 'get_lambda_range'
+    
     MODEL = []
     MSE = []
     for l in lmbda:
@@ -172,6 +173,7 @@ def main():
 
     # Find best value of lmbda in terms of MSE
     # Record this value on the writeup
+    
     ind = np.argmin(MSE)
     [lmda_best, MSE_best, model_best] = [lmbda[ind], MSE[ind], MODEL[ind]]
 

@@ -88,11 +88,11 @@ if __name__ == "__main__":
         y.append(float(j))
 
     ### Part 1 ###
-
     ### Part 2 ###
     # The paramater values for degrees 2 and 4 have been provided as test cases in the README.
     # The output should match up to at least 3 decimal places rounded
     # Write out the resulting estimated functions for each d.
+    
     degrees = [1, 2, 3, 4, 5, 6] #
     paramFits = main(datapath, degrees)
 
@@ -105,13 +105,12 @@ if __name__ == "__main__":
     ### Part 3 ###
     # Use the 'scatter' and 'plot' functions in the `matplotlib.pyplot` module.
     # Draw a scatter plot
+    
     plt.figure(figsize=(12, 8))
     plt.scatter(x, y, color='black', label='data', s=20, alpha=0.7)
     x_sorted = sorted(x)
     x_dense = np.linspace(min(x), max(x), 300)
-
     colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown']
-
 
     for i, params in enumerate(paramFits):
         y_pred = []
@@ -121,7 +120,6 @@ if __name__ == "__main__":
                 power = len(params) - j - 1
                 y_val += coeff * (x_val ** power)
             y_pred.append(y_val)
-
         plt.plot(x_dense, y_pred,
                  color=colors[i],
                  label=f'd={degrees[i]}',
@@ -147,7 +145,6 @@ if __name__ == "__main__":
     print(f"Best fitting polynomial degree: {best_degree}")
     print(f"Predicted value for x=2: {prediction:.5f}")
 
-    # Print the actual equation
     coefficients = paramFits[degrees.index(best_degree)]
     print(f"Equation: y = ", end="")
     terms = []
